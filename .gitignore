@@ -57,3 +57,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.xml
+JoeOS/manifest.mf
+*.properties
