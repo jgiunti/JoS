@@ -41,10 +41,11 @@ import joeos.ProcessManagement.Models.VirtualProcess;
  * @author Joe
  */
 public class Processes {
+    private static PCBlock CPU;
+    public static int globalTime = 0;
+    public static int cpuTime = 0;  
     
-    public static void intitialize() throws FileNotFoundException, IOException{       
-        int globalTime = 0;
-        int cpuTime = 0;
+    public static void intitialize() throws FileNotFoundException, IOException{              
         File procData = new File("G:/Documents/Computer Science/CS451/project2/processes2.txt");
         FileReader reader = new FileReader(procData);
         BufferedReader br = new BufferedReader(reader);
@@ -73,6 +74,12 @@ public class Processes {
                     }                                                                         
                 }                     
             }
+            if(cpuFree() && !pTable.isEmpty()){
+                cpuTime = 0;
+                PCBlock nextProc = pTable.nextProcess();              
+                schedule(nextProc);
+                nextProc.executing();
+            }
             globalTime++;
         }
         
@@ -82,7 +89,15 @@ public class Processes {
             System.out.println("Process Name: " + processBlock.getPname() + "\n" +
                     "Process   ID: " + processBlock.getPID());
         });
-    }   
+    }
+    
+    public static boolean cpuFree(){
+        return CPU == null;
+    }
+    
+    public static void schedule(PCBlock block){
+        CPU = block;
+    }
 }
 
 

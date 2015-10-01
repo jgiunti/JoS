@@ -60,6 +60,18 @@ public class PCBlock implements Comparable<PCBlock>{
         this.nextPCB = block;
     }
     
+    public void ready(){
+        this.pState = 'r';
+    }
+    
+    public void executing(){
+        this.pState = 'e';
+    }
+    
+    public void terminated(){
+        this.pState = 't';
+    }
+    
     public int getPID(){
         return this.pID;
     }

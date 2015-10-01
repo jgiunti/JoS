@@ -80,6 +80,10 @@ public class ProcessTable {
         return _nextID == -99;
     }
     
+    public boolean isEmpty(){
+        return Ready_Q == null;
+    }
+    
     public static int getNextID(){
         return _nextID;
     }
@@ -95,6 +99,22 @@ public class ProcessTable {
             }
             return _nextID;
         }
+    }
+    
+    public boolean cpuFree(){
+        return CPU == null;
+    }
+    
+    public PCBlock nextProcess(){
+        PCBlock temp = Ready_Q;
+        if(temp != null){
+            updateReadyQ();
+        }       
+        return temp;
+    }
+    
+    private void updateReadyQ(){
+        Ready_Q = Ready_Q.nextPCB();
     }
     
 }
