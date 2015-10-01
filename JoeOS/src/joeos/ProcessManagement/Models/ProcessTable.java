@@ -13,37 +13,56 @@ import java.util.ArrayList;
  */
 public class ProcessTable {
     
-    private static final ArrayList<PCBlock> table = new ArrayList<>(100);
-    private static int nextID;
+    private ArrayList<PCBlock> table;
+    private static int _nextID;
     
-    public static void init(){
+    public ProcessTable(){
+        table = new ArrayList<>(100);
+        _nextID = 0;
+    }
+    
+    public void init(){
         for(int i = 0; i < 100; i++){
-            table.add(null);
+            this.table.add(null);
         }
     }
     
-    public static void add(PCBlock block){
-        table.set(block.pID, block);
+    public void add(PCBlock block){
+        this.table.set(block.pID, block);
+        if(table.contains(null)){
+            nextId();
+        }   
+        else{
+            _nextID = -99;
+        }
     }
        
-    public static void remove(PCBlock block){
-        table.remove(block);
+    public void remove(PCBlock block){
+        this.table.remove(block);
     }
     
-    public static ArrayList<PCBlock> getTable(){
-        return table;
+    public ArrayList<PCBlock> getTable(){
+        return this.table;
     }
     
-    public static int nextID(){
-        if(table.isEmpty()){
-            nextID = 0;
+    public boolean isFull(){
+        return _nextID == -99;
+    }
+    
+    public static int getNextID(){
+        return _nextID;
+    }
+    
+    private int nextId(){
+        if(this.table.isEmpty()){
+            _nextID = 0;
             return 0;
         }
         else{
-            while(table.get(nextID) != null){
-                nextID = (nextID + 1) % 100;
+            while(this.table.get(_nextID) != null){
+                _nextID = (_nextID + 1) % 100;
             }
-            return nextID;
+            return _nextID;
         }
     }
     

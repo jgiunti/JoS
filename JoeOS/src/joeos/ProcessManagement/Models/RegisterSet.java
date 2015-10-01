@@ -11,20 +11,39 @@ package joeos.ProcessManagement.Models;
  */
 public class RegisterSet {
     
-    public String XAR; 
-    public String XDI; 
-    public String XDO;
-    public String PC; 
-    public String IR;
-    public String EMIT;           
-    public String RR;
-    public String PSW; 
-    public String R0;
-    public String R1;
-    public String R2;
-    public String R3;
-    public String R4;
-    public String R5;
-    public String R6;
-    public String R7;   
+    private String XAR; 
+    private String XDI; 
+    private String XDO;
+    private String PC; 
+    private String IR;
+    private String EMIT;           
+    private String RR;
+    private String PSW; 
+    private String R0;
+    private String R1;
+    private String R2;
+    private String R3;
+    private String R4;
+    private String R5;
+    private String R6;
+    private String R7;   
+    
+    public RegisterSet(String[] vals){
+        XAR = vals[4];
+        XDI = vals[5];
+        XDO = vals[6];
+        PC  = vals[7];
+        IR = vals[8];
+        EMIT = vals[9];
+        RR = vals[10];
+        PSW = vals[11];
+        R0 = vals[12];
+        R1 = vals[13];
+        R2 = vals[14];
+        R3 = vals[15];
+        R4 = vals[16];
+        R5 = vals[17];
+        R6 = vals[18];
+        R7 = vals[19];
+    }
 }

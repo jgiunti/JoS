@@ -60,3 +60,5 @@ $RECYCLE.BIN/
 *.xml
 JoeOS/manifest.mf
 *.properties
+/JoeOS/build/
+/JoeOS/dist/
