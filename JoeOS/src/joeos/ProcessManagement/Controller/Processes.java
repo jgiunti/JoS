@@ -43,7 +43,9 @@ import joeos.ProcessManagement.Models.VirtualProcess;
 public class Processes {
     private static PCBlock CPU;
     public static int globalTime = 0;
-    public static int cpuTime = 0;  
+    public static int cpuTime = 0;
+    public static boolean readyQChanged = false;
+    public static boolean termQChanged = false;
     
     public static void intitialize() throws FileNotFoundException, IOException{              
         File procData = new File("G:/Documents/Computer Science/CS451/project2/processes2.txt");
@@ -58,6 +60,8 @@ public class Processes {
         ProcessTable pTable = new ProcessTable();  
         pTable.init();
         while(!procList.isEmpty()){
+            readyQChanged = false;
+            termQChanged = false;
             for(int i = 0; i < procList.size(); i ++){
                 if(procList.get(i).getArrivalTime() == globalTime){
                     VirtualProcess arrivedProcess = procList.get(i);
@@ -65,12 +69,12 @@ public class Processes {
                         PCBlock block = new PCBlock(arrivedProcess.getProcessInfo());          
                         pTable.add(block);
                         procList.remove(i);
+                        readyQChanged = true;
                     }
                     else{
                         arrivedProcess.incArrivalTime();                                         
                         procList.set(i, arrivedProcess);
-                        System.out.println("Process Table full");
-                        i--;
+                        //System.out.println("Process Table full");
                     }                                                                         
                 }                     
             }
@@ -79,6 +83,25 @@ public class Processes {
                 PCBlock nextProc = pTable.nextProcess();              
                 schedule(nextProc);
                 nextProc.executing();
+                readyQChanged = true;
+            }
+            else if(!cpuFree()){
+                cpuTime++;
+                if(CPU.getCpuBurst() <= cpuTime){
+                    CPU.terminated();
+                    pTable.updateTermQ(CPU);
+                    termQChanged = true;
+                    CPU = null;
+                }
+            }
+            if(readyQChanged){
+                pTable.printQ('r');
+            }
+            if(termQChanged){
+                pTable.printQ('t');
+            }
+            if(globalTime % 5 == 0){
+                pTable.clearTermQ();
             }
             globalTime++;
         }
@@ -96,6 +119,7 @@ public class Processes {
     }
     
     public static void schedule(PCBlock block){
+        block.setNextPCB(null);
         CPU = block;
     }
 }

@@ -117,4 +117,42 @@ public class ProcessTable {
         Ready_Q = Ready_Q.nextPCB();
     }
     
+    public void updateTermQ(PCBlock block){
+        if(Term_Q == null){
+            Term_Q = block;
+        }
+        else{
+            PCBlock temp = Term_Q;
+            while(temp.nextPCB() != null){
+                temp = temp.nextPCB();
+            }
+            temp.setNextPCB(block);        
+        }
+    }
+    
+    public void printQ(char qType){      
+        PCBlock temp;
+        if(qType == 'r'){
+            temp = Ready_Q;
+            System.out.println("READY Q: ");
+        }
+        else{
+            temp = Term_Q;
+            System.out.println("TERMINATED Q: ");
+        }
+        while(temp != null){
+            System.out.println("Process Name: " + temp.getPname() + "\n" +
+                    "Process   ID: " + temp.getPID());
+            temp = temp.nextPCB();
+        }
+    }
+    
+    public void clearTermQ(){
+        PCBlock temp = Term_Q;
+        while(temp != null){
+            this.table.set(temp.getPID(), null);
+            temp = temp.nextPCB();
+        }
+        Term_Q = null;
+    }
 }
