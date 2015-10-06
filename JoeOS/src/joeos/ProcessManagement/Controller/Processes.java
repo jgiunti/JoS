@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import joeos.ProcessManagement.Models.PCBlock;
 import joeos.ProcessManagement.Models.ProcessTable;
@@ -69,11 +68,11 @@ public class Processes {
                         PCBlock block = new PCBlock(arrivedProcess.getProcessInfo());          
                         pTable.add(block);
                         procList.remove(i);
+                        i--;
                         readyQChanged = true;
                     }
                     else{
                         arrivedProcess.incArrivalTime();                                         
-                        procList.set(i, arrivedProcess);
                         //System.out.println("Process Table full");
                     }                                                                         
                 }                     
@@ -82,7 +81,6 @@ public class Processes {
                 cpuTime = 0;
                 PCBlock nextProc = pTable.nextProcess();              
                 schedule(nextProc);
-                nextProc.executing();
                 readyQChanged = true;
             }
             else if(!cpuFree()){
@@ -100,18 +98,11 @@ public class Processes {
             if(termQChanged){
                 pTable.printQ('t');
             }
-            if(globalTime % 5 == 0){
+            if(globalTime % 200 == 0){
                 pTable.clearTermQ();
             }
             globalTime++;
         }
-        
-        
-        ArrayList<PCBlock> ptable2 = pTable.getTable();
-        ptable2.stream().forEach((processBlock) -> {
-            System.out.println("Process Name: " + processBlock.getPname() + "\n" +
-                    "Process   ID: " + processBlock.getPID());
-        });
     }
     
     public static boolean cpuFree(){
@@ -121,6 +112,7 @@ public class Processes {
     public static void schedule(PCBlock block){
         block.setNextPCB(null);
         CPU = block;
+        CPU.executing();
     }
 }
 

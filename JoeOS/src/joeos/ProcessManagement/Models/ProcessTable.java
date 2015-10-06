@@ -44,8 +44,8 @@ public class ProcessTable {
     
     public void init(){
         for(int i = 0; i < 100; i++){
-            this.table.add(null);
-        }
+            this.table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
+        }                        //set method requires an element to be in the index
     }
     
     public void add(PCBlock block){
@@ -150,6 +150,7 @@ public class ProcessTable {
     public void clearTermQ(){
         PCBlock temp = Term_Q;
         while(temp != null){
+            _nextID = temp.getPID();
             this.table.set(temp.getPID(), null);
             temp = temp.nextPCB();
         }
