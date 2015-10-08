@@ -21,31 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package Utility;
+package joeos.Utility;
 
 import java.util.AbstractQueue;
 import java.util.HashMap;
 import java.util.Iterator;
+import joeos.ProcessManagement.Models.PCBlock;
 
 /**
  *
  * @author Joe
- * @param <PCBlock>
  */
-public class ReadyQueue<PCBlock> extends AbstractQueue{
+public class ReadyQueue extends AbstractQueue{
     
     private Integer[] q;
     private HashMap<Integer, Integer> vals;
     private int size;
     private int maxSize;
-    private int head;
     
     public ReadyQueue(int capacity) {
         q = new Integer[capacity];
         vals = new HashMap<>();
         size = 0;
         maxSize = capacity;
-        head = 0;
     }
     
     @Override
@@ -74,10 +72,13 @@ public class ReadyQueue<PCBlock> extends AbstractQueue{
     @Override
     public boolean offer(Object e) {
         try {
-            int item = (Integer)e;
+            PCBlock ref = (PCBlock)e;
+            int id = ref.getPID();
+            int burst = ref.getCpuBurst();
             if (size < maxSize) {
-                q[size] = item;
+                q[size] = id;
                 size++;
+                vals.put(id, burst);
                 percUp();
                 return true;
             }
@@ -96,9 +97,13 @@ public class ReadyQueue<PCBlock> extends AbstractQueue{
     @Override
     public Object poll() {
         if (!isEmpty()) {
-            int first = head;
+            int head = q[0];
+            q[0] = q[size - 1];
+            q[size - 1] = null;
+            size--;
             percDown();
-            return first;
+            vals.remove(head);
+            return head;
         }
         else {
             return null;
@@ -116,11 +121,42 @@ public class ReadyQueue<PCBlock> extends AbstractQueue{
     }
     
     private void percDown() {
-        
+        int pos = 0;
+        while (hasLeftChild(pos)) {
+            int smallest = leftChild(pos);
+            if (hasRightChild(pos)) {
+                if (value(rightChild(pos)) < value(smallest)) {
+                    smallest = rightChild(pos);
+                }
+            }
+            if (value(smallest) < value(pos)){
+                swap(pos, smallest);
+            }
+            else {
+                break;
+            }
+            pos = smallest;
+        }
     }
     
     private void percUp() {
-        
+        int pos = size - 1;
+        while (hasParent(pos)) {
+            int parent = parent(pos);
+            if (value(pos) < value(parent)){
+                swap(pos, parent);
+            }
+            else {
+                break;
+            }
+            pos = parent;
+        }     
+    }
+    
+    private void swap(int i, int j) {
+        int temp = q[i];
+        q[i] = q[j];
+        q[j] = temp;
     }
     
     private boolean hasLeftChild(int i) {
@@ -131,11 +167,39 @@ public class ReadyQueue<PCBlock> extends AbstractQueue{
         return (i * 2) + 2 < size;
     }
     
-    @Override
-    public boolean isEmpty() {
-        return this.q.length == 0;
+    private boolean hasParent(int i) {
+        return i > 0;
     }
     
+    private int leftChild(int i) {
+        return q[(i * 2) + 1];
+    }
+    
+    private int rightChild(int i) {
+        return q[(i * 2) + 1];
+    }
+    
+    private int parent(int i) {
+        return q[(i - 1) / 2];
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return this.q[0] == null;
+    }
+    
+    public int value(int i) {
+        if (!vals.containsKey(i)) {
+            return -1;
+        }
+        return vals.get(i);
+    }
+    
+    public void print() {
+        for (Integer q1 : q) {
+            System.out.println(q1);
+        }
+    }
     
     
 }

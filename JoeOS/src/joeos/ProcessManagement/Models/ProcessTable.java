@@ -23,6 +23,7 @@
  */
 package joeos.ProcessManagement.Models;
 
+import joeos.Utility.ReadyQueue;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
@@ -37,11 +38,13 @@ public class ProcessTable {
     private PCBlock Ready_Q;
     private PCBlock Term_Q;
     private PriorityQueue<PCBlock> sjn;
+    private ReadyQueue rq;
     
     public ProcessTable() {
         table = new ArrayList<>(100);
         sjn = new PriorityQueue<>();
         _nextID = 0;
+        rq = new ReadyQueue(100);  
     }
     
     public void init(){
@@ -52,7 +55,7 @@ public class ProcessTable {
     
     public void add(PCBlock block) {
         this.table.set(block.getPID(), block);
-        this.sjn.offer(block);
+        this.rq.offer(block);
         if (table.contains(null)){
             nextId();
         }   
@@ -74,7 +77,7 @@ public class ProcessTable {
     }
     
     public boolean isEmpty() {
-        return this.sjn.peek() == null;
+        return this.rq.isEmpty();
     }
     
     public static int getNextID() {
@@ -95,7 +98,7 @@ public class ProcessTable {
     }
       
     public PCBlock nextProcess() {
-        return this.sjn.poll();
+        return this.table.get((Integer)this.rq.poll());
     }
     
     private void updateReadyQ() {
@@ -120,16 +123,17 @@ public class ProcessTable {
         if (qType == 'r') {
             temp = Ready_Q;
             System.out.println("READY Q: ");
+            this.rq.print();
         }
         else {
             temp = Term_Q;
             System.out.println("TERMINATED Q: ");
         }
-        while (temp != null) {
+        /*while (temp != null) {
             System.out.println("Process Name: " + temp.getPname() + "\n" +
                     "Process   ID: " + temp.getPID());
             temp = temp.nextPCB();
-        }
+        }*/
     }
     
     public void clearTermQ() {
