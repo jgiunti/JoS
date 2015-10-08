@@ -34,10 +34,10 @@ import joeos.ProcessManagement.Models.PCBlock;
  */
 public class ReadyQueue extends AbstractQueue{
     
-    private Integer[] q;
-    private HashMap<Integer, Integer> vals;
+    private final Integer[] q;
+    private final HashMap<Integer, Integer> vals;
     private int size;
-    private int maxSize;
+    private final int maxSize;
     
     public ReadyQueue(int capacity) {
         q = new Integer[capacity];
@@ -185,7 +185,7 @@ public class ReadyQueue extends AbstractQueue{
     
     @Override
     public boolean isEmpty() {
-        return this.q[0] == null;
+        return q[0] == null;
     }
     
     public int value(int i) {
@@ -199,6 +199,10 @@ public class ReadyQueue extends AbstractQueue{
         for (Integer q1 : q) {
             System.out.println(q1);
         }
+    }
+    
+    public Integer[] getQ() {
+        return q;
     }
     
     

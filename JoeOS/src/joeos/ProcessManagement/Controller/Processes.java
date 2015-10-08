@@ -45,7 +45,6 @@ public class Processes {
     public static int cpuTime = 0;
     public static boolean readyQChanged = false;
     public static boolean termQChanged = false;
-    static int count = 0;
     
     public static void intitialize() throws FileNotFoundException, IOException{              
         File procData = new File("G:/Documents/Computer Science/CS451/project2/processes2.txt");
@@ -74,7 +73,6 @@ public class Processes {
                     }
                     else {
                         arrivedProcess.incArrivalTime();                                         
-                        //System.out.println("Process Table full");
                     }                                                                         
                 }                     
             }
@@ -82,9 +80,6 @@ public class Processes {
                 cpuTime = 0;
                 PCBlock nextProc = pTable.nextProcess();              
                 schedule(nextProc);
-                count++;
-                System.out.println(CPU.getCpuBurst());
-                System.out.println("count " + count);
                 readyQChanged = true;
             }
             else if (!cpuFree()) {
@@ -97,10 +92,10 @@ public class Processes {
                 }
             }
             if (readyQChanged) {
-                //pTable.printQ('r');
+                pTable.printQ('r');
             }
             if (termQChanged) {
-                //pTable.printQ('t');
+                pTable.printQ('t');
             }
             if (globalTime % 200 == 0) {
                 pTable.clearTermQ();

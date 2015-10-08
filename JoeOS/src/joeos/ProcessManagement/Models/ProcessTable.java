@@ -25,7 +25,6 @@ package joeos.ProcessManagement.Models;
 
 import joeos.Utility.ReadyQueue;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 /**
  *
@@ -33,29 +32,27 @@ import java.util.PriorityQueue;
  */
 public class ProcessTable {
     
-    private ArrayList<PCBlock> table;
+    private final ArrayList<PCBlock> table;
     private static int _nextID;
     private PCBlock Ready_Q;
     private PCBlock Term_Q;
-    private PriorityQueue<PCBlock> sjn;
-    private ReadyQueue rq;
+    private final ReadyQueue rq;
     
     public ProcessTable() {
         table = new ArrayList<>(100);
-        sjn = new PriorityQueue<>();
         _nextID = 0;
         rq = new ReadyQueue(100);  
     }
     
     public void init(){
         for(int i = 0; i < 100; i++) {
-            this.table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
+            table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
         }                        //set method requires an element to be in the index
     }
     
     public void add(PCBlock block) {
-        this.table.set(block.getPID(), block);
-        this.rq.offer(block);
+        table.set(block.getPID(), block);
+        rq.offer(block);
         if (table.contains(null)){
             nextId();
         }   
@@ -65,11 +62,11 @@ public class ProcessTable {
     }
        
     public void remove(PCBlock block) {
-        this.table.remove(block);
+        table.remove(block);
     }
     
     public ArrayList<PCBlock> getTable() {
-        return this.table;
+        return table;
     }
     
     public boolean isFull() {
@@ -77,7 +74,7 @@ public class ProcessTable {
     }
     
     public boolean isEmpty() {
-        return this.rq.isEmpty();
+        return rq.isEmpty();
     }
     
     public static int getNextID() {
@@ -85,12 +82,12 @@ public class ProcessTable {
     }
     
     private int nextId() {
-        if (this.table.isEmpty()) {
+        if (table.isEmpty()) {
             _nextID = 0;
             return 0;
         }
         else {
-            while(this.table.get(_nextID) != null) {
+            while(table.get(_nextID) != null) {
                 _nextID = (_nextID + 1) % 100;
             }
             return _nextID;
@@ -98,12 +95,8 @@ public class ProcessTable {
     }
       
     public PCBlock nextProcess() {
-        return this.table.get((Integer)this.rq.poll());
-    }
-    
-    private void updateReadyQ() {
-        Ready_Q = Ready_Q.nextPCB();
-    }
+        return table.get((Integer)rq.poll());
+    }  
     
     public void updateTermQ(PCBlock block) {
         if (Term_Q == null) {
@@ -121,26 +114,30 @@ public class ProcessTable {
     public void printQ(char qType) {      
         PCBlock temp;
         if (qType == 'r') {
-            temp = Ready_Q;
+            Integer[] q = rq.getQ();
             System.out.println("READY Q: ");
-            this.rq.print();
+            for (Integer q1 : q) {
+                if (q1 != null) {
+                    System.out.println(table.get(q1).getPname());
+                }             
+            }         
         }
         else {
             temp = Term_Q;
             System.out.println("TERMINATED Q: ");
-        }
-        /*while (temp != null) {
+            while (temp != null) {
             System.out.println("Process Name: " + temp.getPname() + "\n" +
                     "Process   ID: " + temp.getPID());
             temp = temp.nextPCB();
-        }*/
+            }
+        }  
     }
     
     public void clearTermQ() {
         PCBlock temp = Term_Q;
         while (temp != null) {
             _nextID = temp.getPID();
-            this.table.set(temp.getPID(), null);
+            table.set(temp.getPID(), null);
             temp = temp.nextPCB();
         }
         Term_Q = null;
