@@ -52,64 +52,65 @@ public class Processes {
         BufferedReader br = new BufferedReader(reader);
         LinkedList<VirtualProcess> procList = new LinkedList<>();
         String line = null;
-        while((line = br.readLine()) != null){
+        while ((line = br.readLine()) != null) {
             VirtualProcess vp = new VirtualProcess(line.split("\\s"));
             procList.offer(vp);
         }       
         ProcessTable pTable = new ProcessTable();  
         pTable.init();
-        while(!procList.isEmpty()){
+        while (!procList.isEmpty()) {
             readyQChanged = false;
             termQChanged = false;
-            for(int i = 0; i < procList.size(); i ++){
-                if(procList.get(i).getArrivalTime() == globalTime){
+            for (int i = 0; i < procList.size(); i ++) {
+                if (procList.get(i).getArrivalTime() == globalTime) {
                     VirtualProcess arrivedProcess = procList.get(i);
-                    if(!pTable.isFull()){
+                    if (!pTable.isFull()) {
                         PCBlock block = new PCBlock(arrivedProcess.getProcessInfo());          
                         pTable.add(block);
                         procList.remove(i);
                         i--;
                         readyQChanged = true;
                     }
-                    else{
+                    else {
                         arrivedProcess.incArrivalTime();                                         
                         //System.out.println("Process Table full");
                     }                                                                         
                 }                     
             }
-            if(cpuFree() && !pTable.isEmpty()){
+            if (cpuFree() && !pTable.isEmpty()) {
                 cpuTime = 0;
                 PCBlock nextProc = pTable.nextProcess();              
                 schedule(nextProc);
+                System.out.println(CPU.getCpuBurst());
                 readyQChanged = true;
             }
-            else if(!cpuFree()){
+            else if (!cpuFree()) {
                 cpuTime++;
-                if(CPU.getCpuBurst() <= cpuTime){
+                if (CPU.getCpuBurst() <= cpuTime) {
                     CPU.terminated();
                     pTable.updateTermQ(CPU);
                     termQChanged = true;
                     CPU = null;
                 }
             }
-            if(readyQChanged){
-                pTable.printQ('r');
+            if (readyQChanged) {
+                //pTable.printQ('r');
             }
-            if(termQChanged){
-                pTable.printQ('t');
+            if (termQChanged) {
+                //pTable.printQ('t');
             }
-            if(globalTime % 200 == 0){
+            if (globalTime % 200 == 0) {
                 pTable.clearTermQ();
             }
             globalTime++;
         }
     }
     
-    public static boolean cpuFree(){
+    public static boolean cpuFree() {
         return CPU == null;
     }
     
-    public static void schedule(PCBlock block){
+    public static void schedule(PCBlock block) {
         block.setNextPCB(null);
         CPU = block;
         CPU.executing();

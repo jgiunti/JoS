@@ -46,7 +46,7 @@ public class RegisterSet {
     private String R6;
     private String R7;   
     
-    public RegisterSet(String[] vals){
+    public RegisterSet(String[] vals) {
         XAR = vals[4];
         XDI = vals[5];
         XDO = vals[6];

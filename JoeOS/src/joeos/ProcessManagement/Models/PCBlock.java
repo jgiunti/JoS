@@ -38,7 +38,7 @@ public class PCBlock implements Comparable<PCBlock>{
     private RegisterSet RegVals;
     private PCBlock nextPCB;
     
-    public PCBlock(String[] proc){
+    public PCBlock(String[] proc) {
         pID = ProcessTable.getNextID();
         pState = 'r';
         pName = proc[0];
@@ -48,35 +48,35 @@ public class PCBlock implements Comparable<PCBlock>{
         RegVals = new RegisterSet(proc);
     }
     
-    public int  getCpuBurst(){
+    public int  getCpuBurst() {
         return this.cpuBurst;
     }
     
-    public PCBlock nextPCB(){
+    public PCBlock nextPCB() {
         return this.nextPCB;
     }
     
-    public void setNextPCB(PCBlock block){
+    public void setNextPCB(PCBlock block) {
         this.nextPCB = block;
     }
     
-    public void ready(){
+    public void ready() {
         this.pState = 'r';
     }
     
-    public void executing(){
+    public void executing() {
         this.pState = 'e';
     }
     
-    public void terminated(){
+    public void terminated() {
         this.pState = 't';
     }
     
-    public int getPID(){
+    public int getPID() {
         return this.pID;
     }
     
-    public String getPname(){
+    public String getPname() {
         return this.pName;
     }
 
