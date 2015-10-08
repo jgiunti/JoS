@@ -35,7 +35,6 @@ public class ProcessTable {
     private static int _nextID;
     private PCBlock Ready_Q;
     private PCBlock Term_Q;
-    private PCBlock CPU;
     
     public ProcessTable(){
         table = new ArrayList<>(100);
