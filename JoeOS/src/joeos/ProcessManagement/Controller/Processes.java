@@ -85,8 +85,8 @@ public class Processes {
             }
             else if (!cpuFree()) {
                 cpuTime++;
-                if (CPU.getCpuBurst() <= cpuTime) {
-                    CPU.updateRegVals(genRandomVals());
+                CPU.updateRegVals(genRandomVals());
+                if (CPU.getCpuBurst() <= cpuTime) {                   
                     CPU.terminated();
                     pTable.updateTermQ(CPU);
                     termQChanged = true;
