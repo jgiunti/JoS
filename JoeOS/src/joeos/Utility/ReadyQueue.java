@@ -203,7 +203,5 @@ public class ReadyQueue extends AbstractQueue{
     
     public Integer[] getQ() {
         return q;
-    }
-    
-    
+    }    
 }

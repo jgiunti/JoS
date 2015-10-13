@@ -64,4 +64,23 @@ public class RegisterSet {
         R6 = vals[18];
         R7 = vals[19];
     }
+    
+    public void updateRegVals(String[] vals) {
+        XAR = vals[0];
+        XDI = vals[1];
+        XDO = vals[2];
+        PC  = vals[3];
+        IR = vals[4];
+        EMIT = vals[5];
+        RR = vals[6];
+        PSW = vals[7];
+        R0 = vals[8];
+        R1 = vals[9];
+        R2 = vals[10];
+        R3 = vals[11];
+        R4 = vals[12];
+        R5 = vals[13];
+        R6 = vals[14];
+        R7 = vals[15];
+    }
 }

@@ -27,8 +27,8 @@ package joeos.ProcessManagement.Models;
  *
  * @author Joe
  */
-public class VirtualProcess{
-        private String[] processInfo;
+public final class VirtualProcess{
+        private final String[] processInfo;
         private int arrivalTime;
         
         public VirtualProcess(String[] parsedInfo){

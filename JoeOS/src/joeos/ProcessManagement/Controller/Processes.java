@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Random;
 import joeos.ProcessManagement.Models.PCBlock;
 import joeos.ProcessManagement.Models.ProcessTable;
 import joeos.ProcessManagement.Models.VirtualProcess;
@@ -85,6 +86,7 @@ public class Processes {
             else if (!cpuFree()) {
                 cpuTime++;
                 if (CPU.getCpuBurst() <= cpuTime) {
+                    CPU.updateRegVals(genRandomVals());
                     CPU.terminated();
                     pTable.updateTermQ(CPU);
                     termQChanged = true;
@@ -104,14 +106,26 @@ public class Processes {
         }
     }
     
-    public static boolean cpuFree() {
+    private static boolean cpuFree() {
         return CPU == null;
     }
     
-    public static void schedule(PCBlock block) {
+    private static void schedule(PCBlock block) {
         block.setNextPCB(null);
         CPU = block;
         CPU.executing();
+    }
+    
+    private static String[] genRandomVals() {
+        String[] regVals = new String[16];
+        StringBuilder sb = new StringBuilder();
+        Random rand = new Random();
+        for (int i = 0; i < regVals.length; i++) {           
+            sb.append(Integer.toHexString(rand.nextInt()));          
+            regVals[i] = sb.toString();
+            sb.setLength(0);
+        }
+        return regVals;    
     }
 }
 

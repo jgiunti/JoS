@@ -34,7 +34,6 @@ public class ProcessTable {
     
     private final ArrayList<PCBlock> table;
     private static int _nextID;
-    private PCBlock Ready_Q;
     private PCBlock Term_Q;
     private final ReadyQueue rq;
     
@@ -47,7 +46,7 @@ public class ProcessTable {
     public void init(){
         for(int i = 0; i < 100; i++) {
             table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
-        }                        //set method requires an element to be in the index
+        }                   //set method requires an element to be in the index
     }
     
     public void add(PCBlock block) {
@@ -126,9 +125,9 @@ public class ProcessTable {
             temp = Term_Q;
             System.out.println("TERMINATED Q: ");
             while (temp != null) {
-            System.out.println("Process Name: " + temp.getPname() + "\n" +
-                    "Process   ID: " + temp.getPID());
-            temp = temp.nextPCB();
+                System.out.println("Process Name: " + temp.getPname() + "\n" +
+                        "Process   ID: " + temp.getPID());
+                temp = temp.nextPCB();
             }
         }  
     }

@@ -48,6 +48,10 @@ public class PCBlock implements Comparable<PCBlock>{
         RegVals = new RegisterSet(proc);
     }
     
+    public void updateRegVals(String[] vals) {
+        this.RegVals.updateRegVals(vals);
+    }
+    
     public int getCpuBurst() {
         return this.cpuBurst;
     }
