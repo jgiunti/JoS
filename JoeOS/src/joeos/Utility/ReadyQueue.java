@@ -172,15 +172,15 @@ public class ReadyQueue extends AbstractQueue{
     }
     
     private int leftChild(int i) {
-        return q[(i * 2) + 1];
+        return (i * 2) + 1;
     }
     
     private int rightChild(int i) {
-        return q[(i * 2) + 1];
+        return (i * 2) + 1;
     }
     
     private int parent(int i) {
-        return q[(i - 1) / 2];
+        return (i - 1) / 2;
     }
     
     @Override
@@ -189,10 +189,11 @@ public class ReadyQueue extends AbstractQueue{
     }
     
     public int value(int i) {
-        if (!vals.containsKey(i)) {
+        int key = q[i];
+        if (!vals.containsKey(key)) {
             return -1;
         }
-        return vals.get(i);
+        return vals.get(key);
     }
     
     public void print() {

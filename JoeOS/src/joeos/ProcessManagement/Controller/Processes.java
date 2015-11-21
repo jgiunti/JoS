@@ -28,11 +28,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 import joeos.ProcessManagement.Models.PCBlock;
 import joeos.ProcessManagement.Models.ProcessTable;
 import joeos.ProcessManagement.Models.VirtualProcess;
+import joeos.Utility.FreePartitionList;
+import joeos.Utility.ReadyQueue;
 
 
 
@@ -58,7 +61,9 @@ public class Processes {
             VirtualProcess vp = new VirtualProcess(line.split("\\s"));
             procList.offer(vp);
         }       
-        ProcessTable pTable = new ProcessTable();  
+        ProcessTable pTable = new ProcessTable();
+        FreePartitionList freeParts = new FreePartitionList();
+        ReadyQueue rq = new ReadyQueue(100);
         pTable.init();
         while (!procList.isEmpty() || !pTable.isEmpty()) {
             readyQChanged = false;
@@ -71,24 +76,27 @@ public class Processes {
                         pTable.add(block);
                         procList.remove(i);
                         i--;
-                        if(true) {                           
+                        if (freeParts.allocate(block)) {   
+                            rq.offer(block);
                             block.ready();
                             readyQChanged = true;
                         }
-                        if(false) {
+                        else {
                             block.waiting();
                             memWaitingQ.offer(block);
+                            System.out.println("Process: " + block.getPname() + " waiting for memory");
                         }
                         
                     }
                     else {
-                        arrivedProcess.incArrivalTime();                                         
+                        arrivedProcess.incArrivalTime();  
+                        //System.out.println("Process creating delayed");
                     }                                                                         
                 }                     
             }
-            if (cpuFree() && !pTable.isEmpty()) {
+            if (cpuFree() && !rq.isEmpty()) {
                 cpuTime = 0;
-                PCBlock nextProc = pTable.nextProcess();              
+                PCBlock nextProc =  pTable.schedule((Integer)rq.poll()); //pTable.nextProcess();              
                 schedule(nextProc);
                 readyQChanged = true;
             }
@@ -97,14 +105,27 @@ public class Processes {
                 CPU.updateRegVals(genRandomVals());
                 if (CPU.getCpuBurst() <= cpuTime) {                   
                     CPU.terminated();
+                    freeParts.deallocate(CPU);
                     pTable.updateTermQ(CPU);
+                    ArrayList<PCBlock> remove = new ArrayList<>();
+                    for (PCBlock waiting : memWaitingQ) {
+                        if (freeParts.allocate(waiting)) {
+                            PCBlock allocated = waiting;                          
+                            allocated.ready();
+                            rq.offer(allocated);
+                            remove.add(allocated);
+                        }
+                    }
+                    for(PCBlock alloc : remove) {
+                        memWaitingQ.remove(alloc);
+                    }
                     termQChanged = true;
                     CPU = null;
                 }
             }
-            if (readyQChanged) {
-                pTable.printQ('r');
-            }
+//            if (readyQChanged) {
+//                pTable.printQ('r');
+//            }
             if (termQChanged) {
                 pTable.printQ('t');
             }

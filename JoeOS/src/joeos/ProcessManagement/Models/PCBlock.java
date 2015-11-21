@@ -59,6 +59,10 @@ public class PCBlock implements Comparable<PCBlock>{
         return this.processSize;
     }
     
+    public int getStartLoc() {
+        return this.pStartLoc;
+    }
+    
     public void setStartLoc(int loc) {
         this.pStartLoc = loc;
     }

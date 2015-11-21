@@ -23,6 +23,7 @@
  */
 package joeos.Utility;
 
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import joeos.ProcessManagement.Models.FreePartitionNode;
 import joeos.ProcessManagement.Models.PCBlock;
@@ -34,7 +35,7 @@ import joeos.ProcessManagement.Models.PCBlock;
 public class FreePartitionList {
     
     PriorityQueue<FreePartitionNode> fpl;
-    private static final int _MAX = 20000;
+    private static final int _MAX = 100000;
     
     public FreePartitionList() {
         FreePartitionNode initNode = new FreePartitionNode(0, _MAX);
@@ -62,6 +63,12 @@ public class FreePartitionList {
         }
     }
     
+    public void deallocate(PCBlock block) {
+        createFreePart(block.getStartLoc(), block.getProcSize());
+        
+        block.setStartLoc(-1);
+    }
+    
     private FreePartitionNode search(int size) {
         FreePartitionNode found = null;
         for (FreePartitionNode node : fpl) {
@@ -85,13 +92,24 @@ public class FreePartitionList {
     private void mergeNodes() {
         FreePartitionNode prevNode = fpl.peek();
         if (prevNode != null) {
+            ArrayList<FreePartitionNode> toDelete = new ArrayList<>();
+            ArrayList<FreePartitionNode> toInsert = new ArrayList<>();
             for (FreePartitionNode node : fpl) {
                 if ((prevNode.startLoc() + prevNode.size()) == node.startLoc()) {
                     FreePartitionNode newPart = new FreePartitionNode(prevNode.startLoc(), (prevNode.size() + node.size()));
-                    deletePart(prevNode);
-                    deletePart(node);
-                    insert(newPart);
+                    toDelete.add(node);
+                    toDelete.add(prevNode);
+                    toInsert.add(newPart);
+                    //deletePart(prevNode);
+                    //deletePart(node);
+                    //insert(newPart);
                 }           
+            }
+            for (FreePartitionNode node : toDelete) {
+                deletePart(node);
+            }
+            for (FreePartitionNode node : toInsert) {
+                insert(node);
             }
         }      
     }
