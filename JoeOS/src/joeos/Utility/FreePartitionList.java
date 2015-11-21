@@ -25,6 +25,7 @@ package joeos.Utility;
 
 import java.util.PriorityQueue;
 import joeos.ProcessManagement.Models.FreePartitionNode;
+import joeos.ProcessManagement.Models.PCBlock;
 
 /**
  *
@@ -41,10 +42,30 @@ public class FreePartitionList {
         fpl.offer(initNode);
     }
     
+    public boolean allocate(PCBlock block) {
+        int procSize = block.getProcSize();
+        FreePartitionNode free = search(procSize);
+        
+        if (free == null) {
+            return false;
+        }
+        else {
+            block.setStartLoc(free.startLoc());
+            int newStart = free.startLoc() + procSize;
+            int newSize = free.size() - procSize;
+            deletePart(free);
+            
+            if (newSize != 0) {
+                createFreePart(newStart, newSize);
+            }
+            return true;
+        }
+    }
+    
     private FreePartitionNode search(int size) {
         FreePartitionNode found = null;
-        for(FreePartitionNode node : fpl) {
-            if (node.size() <= size) {
+        for (FreePartitionNode node : fpl) {
+            if (node.size() >= size) {
                 found = node;
             }
         }
@@ -53,9 +74,29 @@ public class FreePartitionList {
     
     private void createFreePart(int startLoc, int size) {
         FreePartitionNode node = new FreePartitionNode(startLoc, size);
+        insert(node);
+        mergeNodes();
     }
     
     private void insert(FreePartitionNode node) {
-        fpl.offer(node);
+        this.fpl.offer(node);
+    }
+    
+    private void mergeNodes() {
+        FreePartitionNode prevNode = fpl.peek();
+        if (prevNode != null) {
+            for (FreePartitionNode node : fpl) {
+                if ((prevNode.startLoc() + prevNode.size()) == node.startLoc()) {
+                    FreePartitionNode newPart = new FreePartitionNode(prevNode.startLoc(), (prevNode.size() + node.size()));
+                    deletePart(prevNode);
+                    deletePart(node);
+                    insert(newPart);
+                }           
+            }
+        }      
+    }
+    
+    private void deletePart(FreePartitionNode node) {
+        this.fpl.remove(node);
     }
 }

@@ -55,6 +55,14 @@ public class PCBlock implements Comparable<PCBlock>{
         this.RegVals.updateRegVals(vals);
     }
     
+    public int getProcSize() {
+        return this.processSize;
+    }
+    
+    public void setStartLoc(int loc) {
+        this.pStartLoc = loc;
+    }
+    
     public int getCpuBurst() {
         return this.cpuBurst;
     }
