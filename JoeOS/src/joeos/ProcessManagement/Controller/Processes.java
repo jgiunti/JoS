@@ -52,6 +52,7 @@ public class Processes {
         FileReader reader = new FileReader(procData);
         BufferedReader br = new BufferedReader(reader);
         LinkedList<VirtualProcess> procList = new LinkedList<>();
+        LinkedList<PCBlock> memWaitingQ = new LinkedList<>();
         String line = null;
         while ((line = br.readLine()) != null) {
             VirtualProcess vp = new VirtualProcess(line.split("\\s"));
@@ -70,7 +71,15 @@ public class Processes {
                         pTable.add(block);
                         procList.remove(i);
                         i--;
-                        readyQChanged = true;
+                        if(true) {                           
+                            block.ready();
+                            readyQChanged = true;
+                        }
+                        if(false) {
+                            block.waiting();
+                            memWaitingQ.offer(block);
+                        }
+                        
                     }
                     else {
                         arrivedProcess.incArrivalTime();                                         

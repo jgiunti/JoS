@@ -37,6 +37,8 @@ public class PCBlock implements Comparable<PCBlock>{
     private int cpuBurst;
     private RegisterSet RegVals;
     private PCBlock nextPCB;
+    private int processSize;
+    private int pStartLoc;
     
     public PCBlock(String[] proc) {
         pID = ProcessTable.getNextID();
@@ -45,6 +47,7 @@ public class PCBlock implements Comparable<PCBlock>{
         priority = Integer.parseInt(proc[1]);
         arrivalTime = Integer.parseInt(proc[2]);
         cpuBurst = Integer.parseInt(proc[3]);
+        processSize = Integer.parseInt(proc[4]);
         RegVals = new RegisterSet(proc);
     }
     
@@ -66,6 +69,10 @@ public class PCBlock implements Comparable<PCBlock>{
     
     public void ready() {
         this.pState = 'r';
+    }
+    
+    public void waiting() {
+        this.pStartLoc = 'w';
     }
     
     public void executing() {
