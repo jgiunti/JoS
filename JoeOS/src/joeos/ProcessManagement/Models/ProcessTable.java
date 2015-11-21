@@ -23,6 +23,7 @@
  */
 package joeos.ProcessManagement.Models;
 
+import joeos.Utility.ReadyQueue;
 import java.util.ArrayList;
 
 /**
@@ -31,127 +32,111 @@ import java.util.ArrayList;
  */
 public class ProcessTable {
     
-    private ArrayList<PCBlock> table;
+    private final ArrayList<PCBlock> table;
     private static int _nextID;
-    private PCBlock Ready_Q;
     private PCBlock Term_Q;
-    private PCBlock CPU;
+    private final ReadyQueue rq;
     
-    public ProcessTable(){
+    public ProcessTable() {
         table = new ArrayList<>(100);
         _nextID = 0;
+        rq = new ReadyQueue(100);  
     }
     
     public void init(){
-        for(int i = 0; i < 100; i++){
-            this.table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
-        }                        //set method requires an element to be in the index
+        for(int i = 0; i < 100; i++) {
+            table.add(null); //I am eating the cost of initializing indexes to null so I can use the set method
+        }                   //set method requires an element to be in the index
     }
     
-    public void add(PCBlock block){
-        this.table.set(block.getPID(), block);
-        if(Ready_Q == null){
-            Ready_Q = block;
-        }
-        else{
-            PCBlock temp = Ready_Q;
-            while(temp.nextPCB() != null){
-                temp = temp.nextPCB();
-            }
-            temp.setNextPCB(block);        
-        }
-        if(table.contains(null)){
+    public void add(PCBlock block) {
+        table.set(block.getPID(), block);
+        rq.offer(block);
+        if (table.contains(null)){
             nextId();
         }   
-        else{
+        else {
             _nextID = -99;
         }
     }
        
-    public void remove(PCBlock block){
-        this.table.remove(block);
+    public void remove(PCBlock block) {
+        table.remove(block);
     }
     
-    public ArrayList<PCBlock> getTable(){
-        return this.table;
+    public ArrayList<PCBlock> getTable() {
+        return table;
     }
     
-    public boolean isFull(){
+    public boolean isFull() {
         return _nextID == -99;
     }
     
-    public boolean isEmpty(){
-        return Ready_Q == null;
+    public boolean isEmpty() {
+        return rq.isEmpty();
     }
     
-    public static int getNextID(){
+    public static int getNextID() {
         return _nextID;
     }
     
-    private int nextId(){
-        if(this.table.isEmpty()){
+    private int nextId() {
+        if (table.isEmpty()) {
             _nextID = 0;
             return 0;
         }
-        else{
-            while(this.table.get(_nextID) != null){
+        else {
+            while(table.get(_nextID) != null) {
                 _nextID = (_nextID + 1) % 100;
             }
             return _nextID;
         }
     }
+      
+    public PCBlock nextProcess() {
+        return table.get((Integer)rq.poll());
+    }  
     
-    public boolean cpuFree(){
-        return CPU == null;
-    }
-    
-    public PCBlock nextProcess(){
-        PCBlock temp = Ready_Q;
-        if(temp != null){
-            updateReadyQ();
-        }       
-        return temp;
-    }
-    
-    private void updateReadyQ(){
-        Ready_Q = Ready_Q.nextPCB();
-    }
-    
-    public void updateTermQ(PCBlock block){
-        if(Term_Q == null){
+    public void updateTermQ(PCBlock block) {
+        if (Term_Q == null) {
             Term_Q = block;
         }
-        else{
+        else {
             PCBlock temp = Term_Q;
-            while(temp.nextPCB() != null){
+            while(temp.nextPCB() != null) {
                 temp = temp.nextPCB();
             }
             temp.setNextPCB(block);        
         }
     }
     
-    public void printQ(char qType){      
+    public void printQ(char qType) {      
         PCBlock temp;
-        if(qType == 'r'){
-            temp = Ready_Q;
+        if (qType == 'r') {
+            Integer[] q = rq.getQ();
             System.out.println("READY Q: ");
+            for (Integer q1 : q) {
+                if (q1 != null) {
+                    System.out.println(table.get(q1).getPname());
+                }             
+            }         
         }
-        else{
+        else {
             temp = Term_Q;
             System.out.println("TERMINATED Q: ");
-        }
-        while(temp != null){
-            System.out.println("Process Name: " + temp.getPname() + "\n" +
-                    "Process   ID: " + temp.getPID());
-            temp = temp.nextPCB();
-        }
+            while (temp != null) {
+                System.out.println("Process Name: " + temp.getPname() + "\n" +
+                        "Process   ID: " + temp.getPID());
+                temp = temp.nextPCB();
+            }
+        }  
     }
     
-    public void clearTermQ(){
+    public void clearTermQ() {
         PCBlock temp = Term_Q;
-        while(temp != null){
+        while (temp != null) {
             _nextID = temp.getPID();
-            this.table.set(temp.getPID(), null);
+            table.set(temp.getPID(), null);
             temp = temp.nextPCB();
         }
         Term_Q = null;

@@ -37,46 +37,65 @@ public class PCBlock implements Comparable<PCBlock>{
     private int cpuBurst;
     private RegisterSet RegVals;
     private PCBlock nextPCB;
+    private int processSize;
+    private int pStartLoc;
     
-    public PCBlock(String[] proc){
+    public PCBlock(String[] proc) {
         pID = ProcessTable.getNextID();
         pState = 'r';
         pName = proc[0];
         priority = Integer.parseInt(proc[1]);
         arrivalTime = Integer.parseInt(proc[2]);
         cpuBurst = Integer.parseInt(proc[3]);
+        processSize = Integer.parseInt(proc[4]);
         RegVals = new RegisterSet(proc);
     }
     
-    public int  getCpuBurst(){
+    public void updateRegVals(String[] vals) {
+        this.RegVals.updateRegVals(vals);
+    }
+    
+    public int getProcSize() {
+        return this.processSize;
+    }
+    
+    public void setStartLoc(int loc) {
+        this.pStartLoc = loc;
+    }
+    
+    public int getCpuBurst() {
         return this.cpuBurst;
     }
     
-    public PCBlock nextPCB(){
+    public PCBlock nextPCB() {
         return this.nextPCB;
     }
     
-    public void setNextPCB(PCBlock block){
+    public void setNextPCB(PCBlock block) {
         this.nextPCB = block;
     }
     
-    public void ready(){
+    public void ready() {
         this.pState = 'r';
     }
     
-    public void executing(){
+    public void waiting() {
+        this.pStartLoc = 'w';
+    }
+    
+    public void executing() {
         this.pState = 'e';
     }
     
-    public void terminated(){
+    public void terminated() {
         this.pState = 't';
     }
     
-    public int getPID(){
+    public int getPID() {
         return this.pID;
     }
     
-    public String getPname(){
+    public String getPname() {
         return this.pName;
     }
 

@@ -27,24 +27,33 @@ package joeos.ProcessManagement.Models;
  *
  * @author Joe
  */
-public final class VirtualProcess{
-        private final String[] processInfo;
-        private int arrivalTime;
-        
-        public VirtualProcess(String[] parsedInfo){
-            arrivalTime = Integer.parseInt(parsedInfo[2]);
-            processInfo = parsedInfo;
+public class FreePartitionNode implements Comparable<FreePartitionNode>{
+    private int startLoc;
+    private int size;
+    
+    public FreePartitionNode(int startLoc, int size) {
+        this.startLoc = startLoc;
+        this.size = size;
+    }
+    
+    public int size() {
+        return this.size;
+    }
+    
+    public int startLoc() {
+        return this.startLoc;
+    }
+    
+    @Override
+    public int compareTo(FreePartitionNode t) {
+        if(this.startLoc == t.startLoc()){
+            return 0;
         }
-        
-        public int getArrivalTime(){
-            return this.arrivalTime;
+        else if(this.startLoc > t.startLoc()){
+            return 1;
         }
-        
-        public String[] getProcessInfo(){
-            return this.processInfo;
+        else{
+            return -1;
         }
-        
-        public void incArrivalTime(){
-            this.arrivalTime++;
-        }
+    }
 }
