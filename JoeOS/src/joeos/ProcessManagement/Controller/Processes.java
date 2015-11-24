@@ -56,7 +56,7 @@ public class Processes {
         BufferedReader br = new BufferedReader(reader);
         LinkedList<VirtualProcess> procList = new LinkedList<>();
         LinkedList<PCBlock> memWaitingQ = new LinkedList<>();
-        String line = null;
+        String line;
         while ((line = br.readLine()) != null) {
             VirtualProcess vp = new VirtualProcess(line.split("\\s"));
             procList.offer(vp);
@@ -96,7 +96,7 @@ public class Processes {
             }
             if (cpuFree() && !rq.isEmpty()) {
                 cpuTime = 0;
-                PCBlock nextProc =  pTable.schedule((Integer)rq.poll()); //pTable.nextProcess();              
+                PCBlock nextProc =  pTable.schedule((Integer)rq.poll());           
                 schedule(nextProc);
                 readyQChanged = true;
             }
@@ -123,11 +123,11 @@ public class Processes {
                     CPU = null;
                 }
             }
-//            if (readyQChanged) {
-//                pTable.printQ('r');
-//            }
+            if (readyQChanged) {
+                pTable.printReadyQ(rq);
+            }
             if (termQChanged) {
-                pTable.printQ('t');
+                pTable.printTermQ('t');
             }
             if (globalTime % 200 == 0) {
                 pTable.clearTermQ();
